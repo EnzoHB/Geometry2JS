@@ -61,9 +61,10 @@ class Vector extends UnitVector {
     };
 };
 
-const vector = new Vector(-4, 4);
+const vector = new Vector(4, -4);
+const vector1 = new Vector(-4, 7);
 
-console.log(degrify(vector.angle));
+console.log(degrify(Vector.intersection(vector, vector1)));
 
 function degrify(angle) {
     return {

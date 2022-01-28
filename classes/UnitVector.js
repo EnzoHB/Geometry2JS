@@ -25,10 +25,17 @@ class UnitVector {
     };
 
     get angle() {
-        const a = this.tip; 
-        const b = Line.xAxis.x(a.x);
 
-        return Angle.intersection([this.line, a], [Line.xAxis, b]);
+        const { acute } = Angle.intersection(this.line, Line.xAxis);
+
+        let signA = Math.sign(this.tip.x);
+        if (signA == 1)
+            return acute;
+            return acute.opposite;
+    };
+
+    get rotation() {
+        
     };
 
     get slope() {

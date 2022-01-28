@@ -45,7 +45,7 @@ class Line {
             return new Point(x, this.slope * x + this.yIntercept);
     };
 
-    rotate(angle) {};
+    rotate(rotation) {};
 
     static 
     fromAngle(line, angle) {
