@@ -1,6 +1,7 @@
 import { Angle } from './Angle.js';
 import { Basis } from './Basis.js';
 import { Point } from './Point.js';
+import { Rotation } from './Rotation.js';
 import { UnitVector } from './UnitVector.js';
 
 class Vector extends UnitVector {
@@ -33,8 +34,13 @@ class Vector extends UnitVector {
         return new Vector(x, y, this.basis);
     };
 
-    rotate(angle) {
+    rotate(radians) {
+        const { rotation, length } = this;
+        const { cos, sin } = rotation.add(radians);
+        const x = cos * length;
+        const y = sin * length;
 
+        return new Vector(x, y, this.basis);
     };
 
     static add(va, vb) {
@@ -52,23 +58,46 @@ class Vector extends UnitVector {
 
     static cross() {};
 
-    static fromLangle(angle, length) {
+    static fromLotation(rotation, length, basis) {
 
+        const l = length;
+        const m = Math.tan(rotation.radians);
+        const x = Math.sqrt(l*l / 1 + m*m);
+
+        let ninety = Math.PI / 2
+        if (ninety > rotation.radians > -ninety) 
+            return new Vector(x, m *  x, basis || Basis.cartesian);
+            return new Vector(-x, m * -x, basis || Basis.cartesian);
     };
 
     static intersection(vectorA, vectorB) {
         return Angle.intersection([vectorA.line, vectorA.tip], [vectorB.line, vectorB.tip]);
     };
+
+    static reflect(line, vector) {
+        // Must return the vector corresponding 
+    };
+
+    static fromPoint(point) {};
 };
 
-const vector = new Vector(4, -4);
-const vector1 = new Vector(-4, 7);
+function degrify(vector) {
+    const { angle, rotation } = vector;
 
-console.log(degrify(Vector.intersection(vector, vector1)));
-
-function degrify(angle) {
     return {
-        radians: Angle.raddeg(angle.radians),
-        rotation: Angle.raddeg(angle.rotation) 
+        angle: {
+            radians: Angle.raddeg(angle.radians),
+            rotation: Angle.raddeg(angle.rotation.radians) 
+        } ,
+        rotation: Angle.raddeg(rotation.radians)
     }
 };
+
+const vector = Vector.fromLotation(new Rotation(0.1418970546041639), 7.0710678118654755);
+
+// 0.1418970546041639
+// 7.0710678118654755
+
+//console.log(vector)
+
+export { Vector }

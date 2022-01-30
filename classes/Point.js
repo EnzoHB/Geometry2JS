@@ -9,6 +9,21 @@ class Point {
         return [ x, y ]
     };
 
+    get quadrant() {
+        const sx = Math.sign(this.x);
+        const sy = Math.sign(this.y);
+
+        if (sx == 1) {
+            if (sy == 1)
+                return 1;
+                return 4;
+        } else {
+            if (sy == 1) 
+                return 2;
+                return 3;
+        }
+    }
+
     decimalCorrection(shift) {
         let x = String(this.x * 10 ** shift);
         let y = String(this.y * 10 ** shift);

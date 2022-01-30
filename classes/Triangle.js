@@ -137,6 +137,6 @@ const triangle = new Triangle(
     new Point(4, 2)
 )
 
-console.log(triangle.angles)
+//console.log(triangle.angles)
 
 export { Triangle }

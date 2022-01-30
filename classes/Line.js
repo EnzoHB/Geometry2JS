@@ -1,5 +1,6 @@
 import { Point } from "./Point.js";
 import { Segment } from "./Segment.js";
+import { Rotation } from "./Rotation.js";
 import { Angle } from "./Angle.js";
 
 class Line {
@@ -23,10 +24,14 @@ class Line {
             return null; // Not parallel
     };
 
-    get angle() {
-        return new Angle(Math.atan(this.slope), 0, this.point);
-    };
+    get tan() {
+        return this.slope;
+    }
 
+    get angle() {
+        return new Angle(Math.tan(this.slope), 0, this.point)
+    };
+    
     y(y) {
         if (this.axis == 1)
             return;
@@ -45,11 +50,15 @@ class Line {
             return new Point(x, this.slope * x + this.yIntercept);
     };
 
-    rotate(rotation) {};
+    rotate(radians) {
+        const rotation = Math.atan(this.tan) + radians;
+        const slope = new Rotation(rotation).tan;
+        
+        return new Line(this.point, slope);
+    };
 
-    static 
-    fromAngle(line, angle) {
-        return new Line(line.point, Math.tan(line.angle.radians + angle.radians))
+    static fromRotation(point, rotation) {
+        return new Line(point, rotation.tan)
     };
 
     static

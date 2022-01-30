@@ -1,6 +1,6 @@
-import { Angle } from './Angle.js';
 import { Line } from './Line.js';
 import { Point } from './Point.js';
+import { Rotation } from './Rotation.js';
 
 class UnitVector {
     constructor(x, y) {
@@ -24,18 +24,8 @@ class UnitVector {
         return [ this.x, this.y ];
     };
 
-    get angle() {
-
-        const { acute } = Angle.intersection(this.line, Line.xAxis);
-
-        let signA = Math.sign(this.tip.x);
-        if (signA == 1)
-            return acute;
-            return acute.opposite;
-    };
-
     get rotation() {
-        
+        return Rotation.fromPoint(this.tip);
     };
 
     get slope() {
@@ -59,8 +49,13 @@ class UnitVector {
         return new UnitVector(this.x *= scalar, this.y *= scalar)
     };
 
-    rotate(angle) {
+    rotate(radians) {
+        const { rotation, length } = this;
+        const { cos, sin } = rotation.add(radians);
+        const x = cos * length;
+        const y = sin * length;
 
+        return new UnitVector(x, y);
     };
 };
 

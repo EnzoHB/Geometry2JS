@@ -81,10 +81,4 @@ class Circle {
     };
 };
 
-
-const circle = new Circle(Point.origin, 4);
-const line = new Line(Point.origin, -4);
-
-console.log(Circle.intersection(circle, line))
-
 export { Circle };
