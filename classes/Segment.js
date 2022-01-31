@@ -1,13 +1,20 @@
+/**
+ * Class Segment
+ * The segment is the third building block. 
+ * Can be defined as the conection 
+ * between two points in the space
+ * 
+ */
+
 import { Point } from './Point.js';
 import { Line } from './Line.js';
-import { Angle } from './Angle.js';
 import { Rotation } from './Rotation.js';
-import { Circle } from './Circle.js';
+import { Validate } from '../Utility/Validate.js';
 
 class Segment {
-    constructor(...points) {
-        this.tail = points[0];
-        this.tip = points[1];
+    constructor(tail, tip) {
+        this.tail = tail;
+        this.tip = tip;
     };
 
     get length() {
@@ -26,7 +33,7 @@ class Segment {
     };
 
     get line() {
-        return new Line(this.tail, this.tip);
+        return new Line(this.slope, this.tail);
     };
 
     get slope() {
@@ -37,44 +44,31 @@ class Segment {
     };
 
     get rotation() {
-        const enzo = Rotation.fromPoint(this.tip, this.tail)
-        return enzo;
+        return Rotation.fromPoint(this.tip, this.tail)
     };
-
-    /*
-    static fromLotation(rotation, length, segment) {
-
-        const circle = new Circle(segment.tail, length);
-        const line = new Line(segment.tail, rotation.tan);
-
-        /*
-        const l = length;
-        const m = Math.tan(rotation.radians);
-        const x = Math.sqrt(l*l / 1 + m*m);
-
-        
-        const intersection = Circle.intersection(circle, line);
-
-        let right;
-        let ninety = Math.PI / 2
-        if (ninety > rotation.radians > -ninety) 
-             right = intersection[0]
-        else right = intersection[1]
-
-        return new Segment(segment.tail, right)
-    };
-    */
 
     rotate(radians) {
-        const rotation = this.rotation.add(radians);
+        Validate.type('number', length);
+        
+        var { rotation, length } = this;
+        var rotation = rotation.add(radians);
 
-        const x = rotation.cos * this.length;
-        const y = rotation.sin * this.length;
+        return Segment.fromRotation(rotation, length)
+    };
 
-        const x1 = this.tail.x + x;
-        const y1 = this.tail.y + y;
+    static fromRotation(rotation, length) {
 
-        return new Segment(this.tail, new Point(x1, y1));
+        Validate.instance(Rotation, rotation);
+        Validate.type('number', length);
+
+        const { point, sin, cos } = rotation;
+
+        const x = point.x + cos * length;
+        const y = point.y + sin * length;
+
+        const tip = new Point(x, y);
+
+        return new Segment(point, tip);
     };
 };
 

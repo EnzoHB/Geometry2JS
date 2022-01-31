@@ -58,16 +58,18 @@ class Vector extends UnitVector {
 
     static cross() {};
 
-    static fromLotation(rotation, length, basis) {
+    static fromRotation(rotation, length, basis) {
 
-        const l = length;
-        const m = Math.tan(rotation.radians);
-        const x = Math.sqrt(l*l / 1 + m*m);
+        const { point, sin, cos } = rotation;
 
-        let ninety = Math.PI / 2
-        if (ninety > rotation.radians > -ninety) 
-            return new Vector(x, m *  x, basis || Basis.cartesian);
-            return new Vector(-x, m * -x, basis || Basis.cartesian);
+        if (point != Point.origin) throw 'Creating a vector not centered at the origin';
+
+        const x = point.x + cos * length;
+        const y = point.y + sin * length;
+
+        const tip = new Point(x, y);
+
+        return new Vector(point, tip, basis);
     };
 
     static intersection(vectorA, vectorB) {
@@ -78,26 +80,15 @@ class Vector extends UnitVector {
         // Must return the vector corresponding 
     };
 
-    static fromPoint(point) {};
+    static fromPoint(point, basis) {
+        const { cos, sin } = Rotation.fromPoint(point);
+        const length = Point.distance(point);
+
+        const x = cos * length;
+        const y = sin * length;
+
+        return new Vector(x, y, basis);
+    };
 };
-
-function degrify(vector) {
-    const { angle, rotation } = vector;
-
-    return {
-        angle: {
-            radians: Angle.raddeg(angle.radians),
-            rotation: Angle.raddeg(angle.rotation.radians) 
-        } ,
-        rotation: Angle.raddeg(rotation.radians)
-    }
-};
-
-const vector = Vector.fromLotation(new Rotation(0.1418970546041639), 7.0710678118654755);
-
-// 0.1418970546041639
-// 7.0710678118654755
-
-//console.log(vector)
 
 export { Vector }

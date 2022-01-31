@@ -50,12 +50,27 @@ class UnitVector {
     };
 
     rotate(radians) {
+
         const { rotation, length } = this;
         const { cos, sin } = rotation.add(radians);
         const x = cos * length;
         const y = sin * length;
 
         return new UnitVector(x, y);
+    };
+
+    static fromRotation(rotation, length, basis) {
+
+        const { point, sin, cos } = rotation;
+
+        if (point != Point.origin) throw 'Creating a vector not centered at the origin';
+
+        const x = point.x + cos * length;
+        const y = point.y + sin * length;
+
+        const tip = new Point(x, y);
+
+        return new UnitVector(point, tip, basis);
     };
 };
 

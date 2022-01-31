@@ -135,8 +135,6 @@ const triangle = new Triangle(
     new Point(1, 0),
     new Point(0, 3),
     new Point(4, 2)
-)
-
-//console.log(triangle.angles)
+);
 
 export { Triangle }

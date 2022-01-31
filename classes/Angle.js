@@ -5,19 +5,23 @@
 */
 
 import { Line } from "./Line.js";
-import { Point } from "./Point.js";
 import { Rotation } from "./Rotation.js";
 
 class Angle {
-    constructor(angle, rotation = 0, point = Point.origin) {
+    constructor(radians, rotation) {
+
+        const { point } = rotation;
 
         // Normalizing;
-        angle %= 2 * Math.PI;
-        rotation = angle >= 0? rotation : rotation + angle;
+        radians %= 2 * Math.PI;
+        rotation = radians >= 0? rotation.radians : rotation.radians + radians;
 
-        this.radians = Math.abs(angle);
-        this.rotation = new Rotation(rotation);
-        this.point = point;
+        this.radians = Math.abs(radians);
+        this.rotation = new Rotation(rotation, point);
+    };
+
+    get point() {
+        return this.rotation.point;
     };
 
     get degrees() {
@@ -25,34 +29,19 @@ class Angle {
     };
 
     get lineA() {
-        return new Line(this.point, Math.tan(this.rotation.radians));
+        return new Line(Math.tan(this.rotation.radians), this.point);
     };
 
     get lineB() {
-        return new Line(this.point, Math.tan(this.radians + this.rotation.radians));
+        return new Line(Math.tan(this.radians + this.rotation.radians), this.point);
     };
 
     get bisector() {
-        return new Line(this.point, Math.tan(this.radians / 2 + this.rotation.radians));
+        return new Line(Math.tan(this.radians / 2 + this.rotation.radians, this.point));
     };
 
     get opposite() {
-        return new Angle(this.radians, this.rotation.radians + Math.PI, this.point);
-    };
-
-    get reflex() {
-        return new Angle(-this.radians, this.rotation.radians + Math.PI, this.point);
-    };
-
-    static fromDegrees(angle, rotation, point) {
-        return new Angle (
-            Angle.degrad(angle),
-            Angle.degrad(rotation), point
-        );
-    };
-
-    static fromRotangle(angle, rotation) {
-        return new Angle(angle, rotation.radians, rotation.point);
+        return new Angle(this.radians, this.rotation.add(Math.PI));
     };
 
     static degrad(degrees) {
@@ -115,11 +104,11 @@ class Angle {
         let angleA =  angle;
         let angleO = -angle + Math.PI;
 
-        let rotationA = Math.atan(lines[0].slope);
-        let rotationO = Math.atan(lines[0].slope) + angleA;
+        let rotationA = new Rotation(Math.atan(lines[0].slope), inter);
+        let rotationO = new Rotation(Math.atan(lines[0].slope) + angleA, inter);
 
-        const acute  = new Angle(angleA, rotationA, inter);
-        const obtuse = new Angle(angleO, rotationO, inter);
+        const acute  = new Angle(angleA, rotationA);
+        const obtuse = new Angle(angleO, rotationO);
 
         if (!points.length) return { acute, obtuse };
 
@@ -156,10 +145,5 @@ class Angle {
     };
 };
 
-/*
-const angle = new Angle(-Math.PI / 8, -Math.PI / 12, Point.origin);
-console.log(angle)
-
-*/
 
 export { Angle }
