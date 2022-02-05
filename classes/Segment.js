@@ -9,7 +9,6 @@
 import { Point } from './Point.js';
 import { Line } from './Line.js';
 import { Rotation } from './Rotation.js';
-import { Validate } from '../Utility/Validate.js';
 
 class Segment {
     constructor(tail, tip) {
@@ -48,7 +47,6 @@ class Segment {
     };
 
     rotate(radians) {
-        Validate.type('number', length);
         
         var { rotation, length } = this;
         var rotation = rotation.add(radians);
@@ -57,9 +55,6 @@ class Segment {
     };
 
     static fromRotation(rotation, length) {
-
-        Validate.instance(Rotation, rotation);
-        Validate.type('number', length);
 
         const { point, sin, cos } = rotation;
 

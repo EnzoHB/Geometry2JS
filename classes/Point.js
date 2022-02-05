@@ -7,14 +7,8 @@
  * 
  */
 
-import { Validate } from "../Utility/Validate.js";
-
 class Point {
     constructor(x, y) {
-
-        Validate.type('number', x);
-        Validate.type('number', y);
-
         this.x = x;
         this.y = y;
     };
@@ -30,14 +24,14 @@ class Point {
 
         if (sx == 1) {
             if (sy == 1)
-                return 1; // + +
-                return 4; // + - 
+                return 1; 
+                return 4; 
         } else {
             if (sy == 1) 
-                return 2; // - +
-                return 3; // - - 
+                return 2;
+                return 3;
         }
-    }
+    };
 
     decimalCorrection(shift) {
 

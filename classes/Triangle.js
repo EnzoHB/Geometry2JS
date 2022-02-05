@@ -43,7 +43,7 @@ class Triangle {
     get circumcenter() {
 
         const edges = [ this.edges[0], this.edges[1] ];
-        const lines = edges.map(edge => new Line(edge.middle, - 1 / edge.slope))
+        const lines = edges.map(edge => new Line(- 1 / edge.slope, edge.middle))
         
         return Line.intersection(...lines)
     };
@@ -123,7 +123,7 @@ class Triangle {
             const vertice = this.vertices[index];
             const slope = - 1 / edge.slope;
 
-            const line = new Line(vertice, slope);
+            const line = new Line(slope, vertice);
             const intersection = Line.intersection(edge.line, line);
 
             return new Segment(vertice, intersection);

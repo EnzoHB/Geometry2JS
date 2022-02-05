@@ -1,94 +1,122 @@
-import { Angle } from './Angle.js';
-import { Basis } from './Basis.js';
-import { Point } from './Point.js';
-import { Rotation } from './Rotation.js';
-import { UnitVector } from './UnitVector.js';
+import { Line } from "./Line.js";
+import { Point } from "./Point.js";
 
-class Vector extends UnitVector {
-    constructor(x, y, basis) {
-        super(x, y);
-        this.basis = basis || Basis.cartesian;
+class Vector {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
     };
 
     get point() {
-        var { ih, x, jh, y } = this;
-        var { x, y } = Vector.add(ih.scale(x), jh.scale(y));
-
-        return new Point(x, y);
+        return new Point(this.x, this.y)
     };
 
-    get ih() {
-        const { x, y } = this.basis.ih;
-        return new UnitVector(x, y)
+    get sin() {
+        return this.y / this.length;
     };
 
-    get jh() {
-        const { x, y } = this.basis.jh;
-        return new UnitVector(x, y)
+    get cos() {
+        return this.x / this.length;
+    };
+
+    get tan() {
+        this.y / this.x;
+    }
+
+    get normalized() {
+        return new Vector(this.cos, this.sin);
+    };
+
+    get length() {
+        return Math.sqrt(
+            this.x ** 2 +
+            this.y ** 2
+        );
+    };
+
+    get pair() {
+        return [ this.x, this.y ]
+    };
+
+    get quadrant() {
+        const sx = Math.sign(this.x);
+        const sy = Math.sign(this.y);
+
+        if (sx == 1) {
+            if (sy == 1)
+                return 1; 
+                return 4; 
+        } else {
+            if (sy == 1) 
+                return 2;
+                return 3;
+        }
     };
 
     scale(scalar) {
-        var x = this.x * scalar;
-        var y = this.y * scalar;
+        return Vector.scale(this, scalar)
+    };
 
-        return new Vector(x, y, this.basis);
+    add(vector) {
+        return Vector.add(this, vector);
     };
 
     rotate(radians) {
-        const { rotation, length } = this;
-        const { cos, sin } = rotation.add(radians);
-        const x = cos * length;
-        const y = sin * length;
-
-        return new Vector(x, y, this.basis);
+        return Vector.rotate(this, radians);
     };
 
-    static add(va, vb) {
-        if (va.basis != vb.basis) 
-            return;
-            return new Vector(va.x + vb.x, va.y + vb.y, va.basis)
+    reflect(line) {
+        return Vector.reflect(this, line);
     };
 
-    static dot(va, vb) {
-        if (va.basis != vb.basis) 
-            return;
-            return new Vector(va.x * vb.x, va.y * vb.y. va.basis);
-
+    static from(cos, sin, length) {
+        return new Vector(cos, sin).scale(length);
     };
 
-    static cross() {};
-
-    static fromRotation(rotation, length, basis) {
-
-        const { point, sin, cos } = rotation;
-
-        if (point != Point.origin) throw 'Creating a vector not centered at the origin';
-
-        const x = point.x + cos * length;
-        const y = point.y + sin * length;
-
-        const tip = new Point(x, y);
-
-        return new Vector(point, tip, basis);
+    static add(vectorA, vectorB) {
+        return new Vector(
+            vectorA.x + vectorB.x,
+            vectorA.y + vectorB.y
+        );
     };
 
-    static intersection(vectorA, vectorB) {
-        return Angle.intersection([vectorA.line, vectorA.tip], [vectorB.line, vectorB.tip]);
+    static scale(vector, scalar) {
+        return new Vector(
+            vector.x * scalar,
+            vector.y * scalar
+        );
     };
 
-    static reflect(line, vector) {
-        // Must return the vector corresponding 
+    static rotate(vector, radians) {
+
+        var sign = Math.sign(radians);
+        var radians = Math.abs(radians);
+        
+        let cos = Math.cos(radians);
+        let sin = Math.sin(radians);
+
+        // Trignometric Transformations
+        sin = vector.sin * cos + sin * vector.cos * sign;
+        cos = vector.cos * cos + vector.sin * sin * sign;
+
+        let x = cos * vector.length;
+        let y = sin * vector.length;
+
+        return new Vector(x, y);
     };
 
-    static fromPoint(point, basis) {
-        const { cos, sin } = Rotation.fromPoint(point);
-        const length = Point.distance(point);
+    static reflect(vector, line) {
 
-        const x = cos * length;
-        const y = sin * length;
+        line = line.normalized;
 
-        return new Vector(x, y, basis);
+        let perpendicular = new Line(-1 / line.slope, vector.point);
+        let intersection = Line.intersection(line, perpendicular);
+
+        const x = intersection.x * 2 - vector.x;
+        const y = intersection.y * 2 - vector.y;
+
+        return new Vector(x, y);
     };
 };
 
-export { Vector }
+export { Vector };

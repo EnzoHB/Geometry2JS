@@ -37,7 +37,7 @@ class Angle {
     };
 
     get bisector() {
-        return new Line(Math.tan(this.radians / 2 + this.rotation.radians, this.point));
+        return new Line(Math.tan(this.radians / 2 + this.rotation.radians), this.point);
     };
 
     get opposite() {

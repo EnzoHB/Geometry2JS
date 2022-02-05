@@ -10,12 +10,9 @@ import { Point } from "./Point.js";
 import { Segment } from "./Segment.js";
 import { Rotation } from "./Rotation.js";
 import { Angle } from "./Angle.js";
-import { Validate } from "../Utility/Validate.js";
 
 class Line {
     constructor(slope, point) {
-        Validate.type('number', slope);
-        Validate.instance(Point, point);
 
         this.point = point || Point.origin;
         this.slope = slope || 0
@@ -46,6 +43,10 @@ class Line {
     get angle() {
         return new Angle(Math.atan(this.tan), new Rotation(0, this.point));
     };
+
+    get normalized() {
+        return new Line(this.slope, Point.origin);
+    };
     
     y(y) {
         // When the line is parallel
@@ -75,8 +76,6 @@ class Line {
 
     rotate(radians) {
 
-        Validate.type('numbers', radians);
-
         const { tan, point } = this;
 
         const rotation = Math.atan(tan) + radians;
@@ -91,9 +90,6 @@ class Line {
 
     static
     intersection(lineA, lineB) {
-
-        Validate.instance(Line, lineA);
-        Validate.instance(Line, lineB);
 
         // Lines are parallel or overlap
         if (lineA.slope == lineB.slope) 
@@ -128,9 +124,6 @@ class Line {
     static 
     distance(line, point) {
 
-        Validate.instance(Line, line);
-        Validate.instance(Point, point);
-
         // Perpendicular lines have always inverse reciprocals as slopes
         const slope = - 1 / line.slope;
         const perpendicular = new Line(slope, point);
@@ -144,9 +137,6 @@ class Line {
     static 
     parallel(lineA, lineB) {
 
-        Validate.instance(Line, lineA);
-        Validate.instance(Line, lineB);
-
         // Y Axis Edge case
         if (lineA.axis + lineB == -2) 
             return true;
@@ -158,9 +148,6 @@ class Line {
     static
     perpendicular(lineA, lineB) {
 
-        Validate.instance(Line, lineA);
-        Validate.instance(Line, lineB);
-
         // Y Axis Edge case
         if (lineA.axis == -lineB.axis)
             return true;
@@ -171,18 +158,11 @@ class Line {
 
     static 
     concurrent(lineA, lineB) {
-
-        Validate.instance(Line, lineA);
-        Validate.instance(Line, lineB);
-
         return !Line.parallel(lineA, lineB);
     };
 
     static 
     overlap(lineA, lineB) {
-
-        Validate.instance(Line, lineA);
-        Validate.instance(Line, lineB);
 
         // Parallel Axis Edge Case
         if ((lineA.axis + lineB.axis) ** 2 == 4) {
@@ -199,9 +179,6 @@ class Line {
 
     static 
     clockSide(line, point) {
-
-        Validate.instance(Line, line);
-        Validate.instance(Point, point);
 
         // Imagine a line parallel to the xAxis
         // Everything below it is right 
@@ -221,9 +198,6 @@ class Line {
 
     static 
     counterSide(line, point) {
-
-        Validate.instance(Line, line);
-        Validate.instance(Point, point);
 
         // Imagine a line parallel to the yAxis
         // Returns if the point is right of left

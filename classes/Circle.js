@@ -13,28 +13,46 @@ class Circle {
 
     x(x) {
 
-        const a = this.center.x;
-        const b = this.center.y;
+        const xc = this.center.x;
+        const yc = this.center.y;
         const r = this.radius;
 
-        const y = Math.sqrt(r*r - (x - a) ** 2) + b;
+        const d = r*r - (x - xc) ** 2;
+        const j = Math.sqrt(d);
 
-        if (isNaN(y))
-            return y;            
-            return new Point(x, y);
+        let y1 = yc + j;
+        let y2 = yc - j;
+
+        if (d < 0) 
+            return [];
+            
+        if (d == 0)
+            return [ new Point(x, y1) ];
+
+        if (d > 0)
+            return [ new Point(x, y1), new Point(x, y2) ];
     };
 
     y(y) {
 
-        const a = this.center.x;
-        const b = this.center.y;
+        const xc = this.center.x;
+        const yc = this.center.y;
         const r = this.radius;
 
-        const x = Math.sqrt(r*r - (y - b) ** 2) + a;
+        const d = r*r - (y - yc) ** 2;
+        const j = Math.sqrt(d);
 
-        if (isNaN(x))
-            return x;            
-            return new Point(x, y);
+        let x1 = xc + j;
+        let x2 = xc - j;
+
+        if (d < 0) 
+            return [];
+            
+        if (d == 0)
+            return [ new Point(x1, y) ];
+
+        if (d > 0)
+            return [ new Point(x1, y), new Point(x2, y) ];
     };
 
     static 
@@ -44,41 +62,46 @@ class Circle {
 
     static
     intersection(circle, line) {
-        
+
         // Equation of a circle (x - xc)² + (y - yc)² = rc²
         // Euqation of a line y = mx + bl
         // Solve the system
 
-        // (x - c1)² + (mx + bl - c2)² = rc²;
-        // x² - 2(c1)x + c1² + m²x² + (bl)(mx) - (c2)(mx) + (bl)(mx) + bl² - (c2)(bl) + cl² - (c2)(mx) - (c2)(bl) = rc²
-        // x²  + m²x² + 2m(bl - c2²)(- 2(c1))(x)  = rc² - c2² - c1² - bl² + 2 * (c1)(bl)
+        if (line.slope == Infinity)
+            return circle.x(line.point.x);
 
-        const r = circle.radius;
-        const i = circle.center.x;
-        const j = circle.center.y;
-        const y = line.yIntercept;
-        const m = line.slope;
-    
-        const a = 1 + m ** 2;
-        const b = 2*((m*y) - (j*m) - i)
-        const c = i*i + j*j + y*y - 2*j*y - (r*r);
+        let { center, radius } = circle;
+        let { slope, yIntercept } = line;
+        let { x, y } = center;
 
-        const d = b*b - 4 * a * c;
-        const { sqrt } = Math;
+        const a = 1 + slope ** 2;
+        const b = 2*((slope * yIntercept) - (y * slope) - x);
+        const c = x**2 + y**2 + yIntercept ** 2 - 2*y*yIntercept - (radius**2);
+        const d = b**2 - 4 * a * c;
 
-        let xes;
+        let d1 =  Math.sqrt(d);
+        let d2 = -Math.sqrt(d);
+
+        let x1 = -b + d1 / (2*a);
+        let x2 = -b + d2 / (2*a);
+
+        x1 = circle.x(x1); 
+        x2 = circle.x(x2);
 
         if (d < 0) 
-            xes = [];
+            return [];
 
         if (d == 0)
-            xes = [ -b / 2 * a ];
-
-        if (d > 0)
-            xes = [ (-b + sqrt(d)) / (2*a), (-b - sqrt(d)) / (2*a) ];
-
-        return xes.map(x => line.x(x));
+            return x1;
+            
+        if (d >  0) {
+            if (line.slope > 0) 
+                return [ x1[0], x2[1] ];
+                return [ x1[1], x2[0] ];  
+        };
     };
 };
+
+const circle = new Circle(Point.origin)
 
 export { Circle };
