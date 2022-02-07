@@ -1,17 +1,74 @@
-import { Vector } from '../classes/Vector.js';
-import Geometry from '../classes/wrapper.js';  
-import Drawers, { clearRect, drawPoint, drawSegment } from './drawers.js'
-
-const { Line, Point, Circle, Triangle } = Geometry;
+import { Canvas } from './canvas.js';
+import { clearRect, drawPoint, drawSegment } from './drawers.js';
+import { Segment } from '../class/Segment.js';
+import Drawers from './drawers.js';
+import { Circle } from '../classes/Circle.js';
+import { Vector } from '../class/Vector.js';
 
 const input = document.querySelector('input')
 const screen = document.querySelector('#screen');
-const bound = screen.getBoundingClientRect();
-const width = window.innerWidth;
-const height = window.innerHeight - bound.y
+const canvas = new Canvas(screen);
 
-screen.height = height;
-screen.width = width;
+class Mouse {
+    constructor(screen, bound) {
+        this.x;
+        this.y;
+        this.inside;
+        this.capturing = true;
+ 
+        screen.addEventListener('mousemove', event => this.capturing && (this.x = event.x - bound.x));
+        screen.addEventListener('mousemove', event => this.capturing && (this.y = event.y - bound.y));
+
+        screen.addEventListener('mouseout', event => this.capturing && (this.inside = false));
+        screen.addEventListener('mousein', event =>  this.capturing && (this.inside = true));
+
+        // screen.addEventListener('mousemove', event => capturing && (this.event = event));
+        // screen.addEventListener('mouseout', event =>  capturing && (this.event = event));
+        // screen.addEventListener('mousein', event =>   capturing && (this.event = event));
+    };
+
+    move() {};
+    scroll() {};
+    up() {};
+    down() {};
+    click() {};
+};
+
+
+
+const mouse = new Mouse(canvas.screen, canvas.bound);
+let motion = new Vector(0, 0)
+
+canvas.onSequence(2).do(vectors => {
+
+    let segment = new Segment(vectors[0], vectors[1]);
+
+    requestAnimationFrame(render)
+
+    function render() {
+
+        motion = segment.tail.relative(new Vector(mouse.x, mouse.y)).scale(1/8);
+
+
+        var radians = input.valueAsNumber * Math.PI / 180;
+        segment = segment.move(motion);
+        segment = segment.rotate(radians);
+
+        clearRect();
+        drawSegment(segment);
+        drawPoint(segment.tail);
+        drawPoint(segment.tip);
+
+        requestAnimationFrame(render);
+    };
+})
+
+canvas.onCreate(vector => {
+    drawPoint(vector)
+});
+
+
+/*
 
 let points = [];
 let segment;
@@ -81,7 +138,7 @@ setInterval(() => {
         step = -step;
     })
 
-    vertices = vertices.map(e => new Vector(...e.pair).add(vectorMain).point);
+    vertices = vertices.map(e => new Vector(...e.pair).add(vectorMain));
 
     const triangleA = new Geometry.Triangle(...vertices);
     triangle = triangleA;
@@ -97,3 +154,5 @@ function drawTriangle(triangle) {
 
     triangle.edges.map(edge => Line.distance(edge.line, triangle.incenter)).forEach(drawSegment);
 };
+
+*/

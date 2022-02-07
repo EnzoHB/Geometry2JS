@@ -1,5 +1,4 @@
-import { Line } from "./Line.js";
-import { Point } from "./Point.js";
+import { Line } from "../classes/Line.js";
 
 class Vector {
     constructor(x, y) {
@@ -57,8 +56,16 @@ class Vector {
         return Vector.add(this, vector);
     };
 
+    dot(vector) {
+        return Vector.dot(this, vector);
+    };
+
     rotate(radians) {
         return Vector.rotate(this, radians);
+    };
+
+    relative(vector) {
+        return Vector.relative(this, vector)
     };
 
     reflect(line) {
@@ -81,6 +88,10 @@ class Vector {
 
     static from(cos, sin, length) {
         return new Vector(cos, sin).scale(length);
+    };
+
+    static relative(vectorA, vectorB) {
+        return new Vector(vectorB.x - vectorA.x, vectorB.y - vectorA.y);
     };
 
     static add(vectorA, vectorB) {
@@ -106,11 +117,11 @@ class Vector {
         let sin = Math.sin(radians);
 
         // Trignometric Transformations
-        sin = vector.sin * cos + sin * vector.cos * sign;
-        cos = vector.cos * cos + vector.sin * sin * sign;
+        let sine = (vector.sin * cos) + (sin * vector.cos * sign);
+        let cosine = (vector.cos * cos) + (vector.sin * sin * -sign);
 
-        let x = cos * vector.length;
-        let y = sin * vector.length;
+        let x = cosine * vector.length;
+        let y = sine * vector.length;
 
         return new Vector(x, y);
     };
@@ -130,6 +141,10 @@ class Vector {
         const y = intersection.y * 2 - vector.y;
 
         return new Vector(x, y);
+    };
+
+    static dot(vectorA, vectorB) {
+        return vectorA.x * vectorB.x + vectorA.y * vectorB.y;
     };
 };
 
