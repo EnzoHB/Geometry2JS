@@ -4,6 +4,7 @@ import { Segment } from '../class/Segment.js';
 import Drawers from './drawers.js';
 import { Circle } from '../classes/Circle.js';
 import { Vector } from '../class/Vector.js';
+import { Line } from '../class/Line.js';
 
 const input = document.querySelector('input')
 const screen = document.querySelector('#screen');
@@ -41,11 +42,37 @@ let motion = new Vector(0, 0)
 
 canvas.onSequence(2).do(vectors => {
 
+    let line = new Line(vectors[0], vectors[0].relative(vectors[1]));
     let segment = new Segment(vectors[0], vectors[1]);
 
-    requestAnimationFrame(render)
+    requestAnimationFrame(renderLine)
 
-    function render() {
+    function renderLine() {
+        clearRect();
+
+        let motion = line.point.relative(new Vector(mouse.x, mouse.y)).scale(1/8);
+        var radians = input.valueAsNumber * Math.PI / 180;
+
+        line = line.move(motion);
+        line = line.rotate(radians)
+
+        let segment1 = new Segment(line.point, line.vector.scale(10000).add(line.point));
+        let segment2 = new Segment(line.point, line.vector.scale(-10000).add(line.point));
+
+        let segme3 = new Segment(line.point, line.perpendicular.vector.scale(10000).add(line.point))
+        let segme4 = new Segment(line.point, line.perpendicular.vector.scale(-10000).add(line.point))
+
+
+        drawSegment(segme3);
+        drawSegment(segme4);
+        drawSegment(segment1);
+        drawSegment(segment2)
+        drawPoint(line.point);
+
+        requestAnimationFrame(renderLine)
+    };
+
+    function renderSegment() {
 
         motion = segment.tail.relative(new Vector(mouse.x, mouse.y)).scale(1/8);
 

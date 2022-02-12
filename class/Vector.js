@@ -15,8 +15,20 @@ class Vector {
     };
 
     get tan() {
-        this.y / this.x;
+        return this.y / this.x;
     }
+
+    get acos() {
+        return Math.acos(this.cos);
+    };
+
+    get asin() {
+        return Math.asin(this.sin);
+    };
+
+    get atan() {
+        return Math.atan(this.tan);
+    };
 
     get normalized() {
         return new Vector(this.cos, this.sin);
@@ -64,6 +76,10 @@ class Vector {
         return Vector.rotate(this, radians);
     };
 
+    angle(vector) {
+        return Vector.angle(this, vector);
+    };
+
     relative(vector) {
         return Vector.relative(this, vector)
     };
@@ -74,6 +90,14 @@ class Vector {
 
     static get origin() {
         return new Vector(0, 0);
+    };
+
+    static get xAxis() {
+        return new Vector(1, 0);
+    };
+
+    static get yAxis() {
+        return new Vector(0, 1);
     };
 
     static distance(a, b) {
@@ -145,6 +169,10 @@ class Vector {
 
     static dot(vectorA, vectorB) {
         return vectorA.x * vectorB.x + vectorA.y * vectorB.y;
+    };
+
+    static angle(vectorA, vectorB) {
+        return Math.acos(vectorA.dot(vectorB) / (vectorA.length * vectorB.length));
     };
 };
 
