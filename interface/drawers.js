@@ -1,4 +1,5 @@
-import Geometry from '../classes/wrapper.js'; 
+import { Vector } from '../class/Vector.js';
+import Geometry from '../class/wrapper.js'; 
 
 const screen = document.querySelector('#screen');
 const ctx = screen.getContext('2d');
@@ -30,21 +31,27 @@ function drawCircle(circle) {
 function drawLine(line, color) {
 
     if (line.axis == '1') {
-        const yAxis1 = new Geometry.Line(new Geometry.Point(0, 0), Infinity);
-        const yAxis2 = new Geometry.Line(new Geometry.Point(screen.width, 0), Infinity);
+        const yAxis1 = new Geometry.Line(new Geometry.Vector(0, 0), new Vector(0, 1));
+        const yAxis2 = new Geometry.Line(new Geometry.Vector(screen.width, 0), new Vector(0, 1));
+
+        console.log({ line, yAxis1, yAxis2 })
     
         const inter1 = Geometry.Line.intersection(line, yAxis1);
         const inter2 = Geometry.Line.intersection(line, yAxis2);
+
+        console.log({ inter1, inter2 })
     
         const segment = new Geometry.Segment(inter1, inter2);
+
+        //console.log(segment)
     
         drawSegment(segment, color);
 
         return;
-};
+    };
 
-    const xAxis1 = new Geometry.Line(new Geometry.Point(0, 0), 0);
-    const xAxis2 = new Geometry.Line(new Geometry.Point(0, screen.height), 0);
+    const xAxis1 = new Geometry.Line(new Geometry.Vector(0, 0), 0);
+    const xAxis2 = new Geometry.Line(new Geometry.Vector(0, screen.height), 0);
 
     const inter1 = Geometry.Line.intersection(line, xAxis1);
     const inter2 = Geometry.Line.intersection(line, xAxis2);
@@ -55,7 +62,7 @@ function drawLine(line, color) {
 };
 
 function drawSegment(segment, color) {
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 1;
     ctx.lineJoin = 'round';
     ctx.strokeStyle = color || 'black';
 

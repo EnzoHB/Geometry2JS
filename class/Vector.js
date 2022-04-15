@@ -34,6 +34,10 @@ class Vector {
         return new Vector(this.cos, this.sin);
     };
 
+    get inverse() {
+        return this.scale(-1);
+    };
+
     get length() {
         return Math.sqrt(
             this.x ** 2 +

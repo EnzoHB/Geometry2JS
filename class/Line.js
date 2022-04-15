@@ -10,7 +10,7 @@ class Line {
         return this.vector.tan;
     };
 
-    get intercepts() {
+    get intercept() {
 
         var { point: { x, y } } = this;
         var { slope } = this;
@@ -27,7 +27,14 @@ class Line {
 
         if (acos == Math.PI / 2)
             return -1;
-            return 0;
+            return null;
+    };
+
+    get perpendicular() {
+        var { point } = this;
+        var { vector } = this;
+
+        return new Line(point, vector.rotate(Math.PI / 2));
     };
     
     x(x) {
@@ -68,19 +75,19 @@ class Line {
         return new Line(point.add(motion), vector);
     };
 
-    intersect(line) {
-        return Line.intersect(this, line);
+    intersection(line) {
+        return Line.intersection(this, line);
     };
 
-    parallel(line) {
+    isParallel(line) {
         return Line.parallel(this, line)
     };
 
-    perpendicular(line) {
+    isPerpendicular(line) {
         return Line.perpendicular(this, line)
     };
 
-    concurrent(line) {
+    isConcurrent(line) {
         return Line.concurrent(this, line)
     };
 
@@ -93,64 +100,52 @@ class Line {
         return new Line(point, new Vector(cos, sin))
     };
 
-    static parallel(lineA, lineB) {
+    static parallel(a, b) {
 
         // Y Axis Edge case
-        if (lineA.axis + lineB.axis == -2) 
+        if (a.axis + b.axis == -2)
             return true;
 
-        if (lineA.slope == lineB.slope) 
+        if (a.slope == b.slope) 
             return true;
+            return false;
     };
     
     static perpendicular(lineA, lineB) {
 
-        // Y Axis Edge case
+        // Axis Edge case
         if (lineA.axis == -lineB.axis)
             return true;
 
         if (lineA.slope == - 1 / lineB.slope)
             return true;
+            return false;
     };
 
     static concurrent(lineA, lineB) {
         return !Line.parallel(lineA, lineB);
     };
 
-    static overlap(lineA, lineB) {
+    static intersection(lineA, lineB) {
 
-        // Parallel Axis Edge Case
-        if ((lineA.axis + lineB.axis) ** 2 == 4) {
-             const axis = lineA.axis == 1? 'x' : 'y';
+        if (lineA.slope == lineB.slope)
+            return null;
 
-            if (lineA.point[axis] == lineB.point[axis])
-                return true;
-        };
-
-        if (lineA.slope == lineB.slope && 
-            lineA.yIntercept == lineB.yIntercept)
-            return true; 
-    };
-
-    static intersect(lineA, lineB) {
-
-        if (lineA.parallel(lineB))
-            return;
-
-        if (lineA.perpendicular(lineB)) {
+        if (lineA.axis && lineB.axis) {
             
-            let { point: { x } } = lineA.axis == 1? lineA : lineB;
-            let { point: { y } } = lineA.axis == 1? lineB : lineA;  
+            let { point: { x } } = lineA.axis == 1? lineB : lineA;
+            let { point: { y } } = lineA.axis == 1? lineA : lineB;  
 
             return new Vector(x, y);
         };
 
-        if ((lineA.axis || lineB.axis)**2 == 1) {
+        if (lineA.axis || lineB.axis) {
 
-            let { point: { x, y } } = lineA.axis == -1? lineA : lineB; 
-            let { slope, intercept } = lineA.axis == -1? lineB : lineA;
+            var concurrent = lineA.axis? lineB : lineA;
+            var parallel = lineA.axis? lineA : lineB;
+            var opposite = parallel.axis == 1? 'y' : 'x';
 
-            return new Vector(x, x * slope + intercept);
+            return concurrent[opposite](parallel.point[opposite]);
         };
 
         
@@ -161,17 +156,4 @@ class Line {
     };
 };
 
-const lineA = new Line(Vector.origin, Vector.xAxis);
-const lineB = new Line(new Vector(9, 8), new Vector(1, 1))
-
-console.log(lineA.intercepts);
-
 export { Line }
-
-1 Receita 
-- 150g de Leite condensado
-- 150g de creme de leite
-- 800ml de leite
-- 15g de liga neutra
-- 60g de leite ninho
-- 90g de choclate em pó

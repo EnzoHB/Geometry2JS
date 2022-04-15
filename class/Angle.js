@@ -34,9 +34,19 @@ class Angle {
         return new Angle(point, vectorA.rotate(radians), vectorB.rotate(radians));
     };
 
+    static radians(degrees) {
+        return Math.PI * degrees / 180;
+    };
+
+    static degrees(radians) {
+        return radians * 180 / Math.PI;
+    };
+
     static from(point, vector, radians) {
         return new Angle(point, vector, vector.rotate(radians)); 
     };
 };
 
+
+console.log(Angle.radians[180])
 export { Angle }
