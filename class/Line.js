@@ -1,159 +1,127 @@
 import { Vector } from "./Vector.js";
+import { Constant, Linear, equals, system, plugin } from '../Math/Algebra.js';
 
 class Line {
-    constructor(point, vector) {
-        this.point = point;
-        this.vector = vector.normalized;
+    constructor(m, b) {
+        this.m = m;
+        this.b = b;
     };
 
-    get slope() {
-        return this.vector.tan;
+    get equation() {
+        let { m } = this;
+        let { b } = this;
+
+        let { infiniteSlope} = this;
+        let { nullSlope } = this;
+
+        if (infiniteSlope || nullSlope)
+            return new Constant(b);
+            return new Linear(m, b);
     };
 
-    get intercept() {
-
-        var { point: { x, y } } = this;
-        var { slope } = this;
-
-        return y - slope * x;
-    }
-
-    get axis() {
-        var { vector } = this;
-        var { acos } = vector;
-
-        if (acos % Math.PI == 0) 
-            return 1;
-
-        if (acos == Math.PI / 2)
-            return -1;
-            return null;
-    };
-
-    get perpendicular() {
-        var { point } = this;
-        var { vector } = this;
-
-        return new Line(point, vector.rotate(Math.PI / 2));
-    };
-    
     x(x) {
-        var { axis } = this;
-        var { point } = this;
 
-        if (axis == -1)
-            return;
+        let { infiniteSlope} = this;
+        let { equation } = this; 
 
-        if (axis == 1)
-            return new Vector(x, point.y);
-            return new Vector(x, this.slope * x + this.intercept); 
+        // If it is constant, then the x argument does nothing;
+        let y = equation.eval(x);
+
+        if (infiniteSlope) 
+            throw new Error(Line.cantDefine);
+            return new Vector(x, y);
     };
 
     y(y) {
-        var { axis } = this;
-        var { point } = this;
+        let { infiniteSlope} = this;
+        let { nullSlope } = this;
+        let { equation } = this; 
 
-        if (axis == 1)
-            return;
+        // When the slope is Infinity, it means B is the X coordinate;
+        let { b } = this;
+ 
+        // We have to solve for X because the main equation is solved for Y;
+        let x = new Constant(y).equals(equation).solve().at();
 
-        if (axis == -1)
-            return new Vector(point.x, y);
-            return new Vector((y - this.intercept) / this.slope, y); 
+        if (nullSlope) 
+            throw new Error(Line.cantDefine);
+
+        if (infiniteSlope) 
+            return new Vector(b, y);
+            return new Vector(x, y);
     };
 
-    rotate(radians) {
-        var { point } = this;
-        var { vector } = this;
+    // ------------ Methods ------------ // 
 
-        return new Line(point, vector.rotate(radians));
-    };
+    static intersectionPoints(a, b) {
 
-    move(motion) {
-        var { point } = this;
-        var { vector } = this;
+        if (a.m === b.m) throw new Error(Line.cantDefine);
 
-        return new Line(point.add(motion), vector);
-    };
+        if (a.infiniteSlope && b.nullSlope) return new Vector(a.equation.eval(), b.equation.eval());
+        if (b.infiniteSlope && a.nullSlope) return new Vector(b.equation.eval(), a.equation.eval());
 
-    intersection(line) {
-        return Line.intersection(this, line);
-    };
-
-    isParallel(line) {
-        return Line.parallel(this, line)
-    };
-
-    isPerpendicular(line) {
-        return Line.perpendicular(this, line)
-    };
-
-    isConcurrent(line) {
-        return Line.concurrent(this, line)
-    };
-
-    static from(point, slope) {
-
-        var atan = Math.atan(slope);
-        var cos = Math.cos(atan);
-        var sin = Math.sin(atan);
-
-        return new Line(point, new Vector(cos, sin))
-    };
-
-    static parallel(a, b) {
-
-        // Y Axis Edge case
-        if (a.axis + b.axis == -2)
-            return true;
-
-        if (a.slope == b.slope) 
-            return true;
-            return false;
+        if (a.infiniteSlope) return new Vector(...plugin(a.equation, b.equation));
+        if (b.infiniteSlope) return new Vector(...system(a.equation, b.equation));
+    
+        return new Vector(...system(a.equation, b.equation));
     };
     
-    static perpendicular(lineA, lineB) {
+    static rotate() {
 
-        // Axis Edge case
-        if (lineA.axis == -lineB.axis)
-            return true;
+    };
+    // ------------ Utility ------------ // 
 
-        if (lineA.slope == - 1 / lineB.slope)
-            return true;
-            return false;
+    get infiniteSlope() {
+        return Math.abs(this.m) === Infinity;
     };
 
-    static concurrent(lineA, lineB) {
-        return !Line.parallel(lineA, lineB);
+    get nullSlope() {
+        return Math.abs(this.m) === 0;
     };
 
-    static intersection(lineA, lineB) {
+    // ---------- Error Logs ---------- //
 
-        if (lineA.slope == lineB.slope)
-            return null;
+    static get cantDefine() {
+        return `Can't define a vector point for the given line slope`;
+    };
 
-        if (lineA.axis && lineB.axis) {
-            
-            let { point: { x } } = lineA.axis == 1? lineB : lineA;
-            let { point: { y } } = lineA.axis == 1? lineA : lineB;  
+    // ---------- From Methods ----------- //
 
-            return new Vector(x, y);
-        };
+    static fromSlope(slope, vector) {
+        return new Line(slope, vector.y)
+    };
 
-        if (lineA.axis || lineB.axis) {
+    static fromIntercept(intercept, vector) {
+        return new Line(vector.tan, intercept);
+    };
 
-            var concurrent = lineA.axis? lineB : lineA;
-            var parallel = lineA.axis? lineA : lineB;
-            var opposite = parallel.axis == 1? 'y' : 'x';
+    static fromVectors(a, b) {
+        let m = ( a.y - b.y ) / ( a.x - b.x );
+        let b = a.y - a.x * m;
 
-            return concurrent[opposite](parallel.point[opposite]);
-        };
-
-        
-        let y = ( lineA.intercept - lineB.intercept ) / ( lineA.slope - lineB.slope );
-        let x = ( y - lineA.intercept ) / lineA.slope;
-
-        return new Vector(x, y);
+        return new Line(m, b);
     };
 };
 
-export { Line }
+
+
+
+/*
+static reflect(vector, line) {
+
+    line = line.normalized;
+
+
+    // x = b2 - b1 / m1 - m2
+    // y = m1x + b1
+
+    let perpendicular = new Line(-1 / line.slope, vector);
+    let intersection = Line.intersection(line, perpendicular);
+
+    const x = intersection.x * 2 - vector.x;
+    const y = intersection.y * 2 - vector.y;
+
+    return new Vector(x, y);
+};
+
+*/

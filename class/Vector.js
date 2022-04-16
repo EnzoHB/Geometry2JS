@@ -1,9 +1,11 @@
-import { Line } from "../classes/Line.js";
-
 class Vector {
     constructor(x, y) {
-        this.x = x;
-        this.y = y;
+
+        if (isNaN(x) || isNaN(y))
+            throw new TypeError(`Expected number from both inputs:\nx: ${x}\ny: ${y}`);
+
+        this.x = Number(x);
+        this.y = Number(y);
     };
 
     get sin() {
@@ -32,10 +34,6 @@ class Vector {
 
     get normalized() {
         return new Vector(this.cos, this.sin);
-    };
-
-    get inverse() {
-        return this.scale(-1);
     };
 
     get length() {
@@ -88,10 +86,6 @@ class Vector {
         return Vector.relative(this, vector)
     };
 
-    reflect(line) {
-        return Vector.reflect(this, line);
-    };
-
     static get origin() {
         return new Vector(0, 0);
     };
@@ -105,7 +99,6 @@ class Vector {
     };
 
     static distance(a, b) {
-        // Distance between two points formula
         return (
             Math.sqrt (
                 (a.x - b.x) ** 2 +
@@ -154,23 +147,6 @@ class Vector {
         return new Vector(x, y);
     };
 
-    static reflect(vector, line) {
-
-        line = line.normalized;
-
-
-        // x = b2 - b1 / m1 - m2
-        // y = m1x + b1
-
-        let perpendicular = new Line(-1 / line.slope, vector);
-        let intersection = Line.intersection(line, perpendicular);
-
-        const x = intersection.x * 2 - vector.x;
-        const y = intersection.y * 2 - vector.y;
-
-        return new Vector(x, y);
-    };
-
     static dot(vectorA, vectorB) {
         return vectorA.x * vectorB.x + vectorA.y * vectorB.y;
     };
@@ -179,5 +155,6 @@ class Vector {
         return Math.acos(vectorA.dot(vectorB) / (vectorA.length * vectorB.length));
     };
 };
+
 
 export { Vector };
