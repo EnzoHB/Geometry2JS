@@ -3,6 +3,8 @@ import { Constant, Linear, equals, system, plugin } from '../Math/Algebra.js';
 
 class Line {
     constructor(m, b) {
+
+        //  ( y, y0 ) = m ( x, x0 ) + b;
         this.m = m;
         this.b = b;
     };
@@ -53,7 +55,7 @@ class Line {
 
     // ------------ Methods ------------ // 
 
-    static intersectionPoints(a, b) {
+    static intersectionPoint(a, b) {
 
         if (a.m === b.m) throw new Error(Line.cantDefine);
 
@@ -69,14 +71,23 @@ class Line {
     static rotate() {
 
     };
+
     // ------------ Utility ------------ // 
 
     get infiniteSlope() {
-        return Math.abs(this.m) === Infinity;
+        return Line.infiniteSlope(this.m);
     };
 
     get nullSlope() {
-        return Math.abs(this.m) === 0;
+        return Line.nullSlope(this.m);
+    };
+
+    static infiniteSlope(m) {
+        return Math.abs(m) === Infinity;
+    };
+
+    static nullSlope(m) {
+        return Math.abs(m) === 0;
     };
 
     // ---------- Error Logs ---------- //
@@ -96,12 +107,36 @@ class Line {
     };
 
     static fromVectors(a, b) {
-        let m = ( a.y - b.y ) / ( a.x - b.x );
-        let b = a.y - a.x * m;
+        let slope = ( a.y - b.y ) / ( a.x - b.x );
+        let intercept = a.y - a.x * m;
 
-        return new Line(m, b);
+        return new Line(slope, intercept);
     };
+
+    // ------------------------------------ //
+
+    static distanceFromVector(l, v) {
+
+        let i;
+        let p;
+        let m = -1 / l.m;
+        let b = v.y - v.x * m;
+
+        if (Line.nullSlope(m)) b = v.y;
+        if (Line.infiniteSlope(m)) b = v.x;
+
+        p = Line.create(m, b);
+        i = Line.intersectionPoint(l, p);
+
+        return Vector.distance(v, i);
+    };
+
+    static create(m, b) {
+        return new Line(m, b);
+    }
 };
+
+export { Line }
 
 
 

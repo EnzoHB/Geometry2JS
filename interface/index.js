@@ -1,5 +1,7 @@
 import { on, shift } from '../node_modules/@enzohb/keyboard/index.js';
-import { Vector }from '../class/Vector.js';
+import { Vector } from '../class/Vector.js';
+import { Angle } from '../Math/Trignometry.js';
+import { Circle } from '../class/Circle.js';
 
 enableInputs();
 
@@ -46,6 +48,23 @@ function canvasVector(vector, lineWidth, color) {
 
 };
 
+function canvasBackground() {
+    clearCanvas();
+    drawCartesian();
+    canvasPoint(Vector.origin);
+};
+
+function canvasPoint(vector) {
+    let radius = 3;
+    let color = 'black';
+
+    ctx.beginPath()
+    ctx.fillStyle = color;
+    ctx.ellipse(vector.x, vector.y, radius, radius, 0, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.closePath();
+};
+
 function canvasRectangle(x, y, width, height, lineWidth, color) {
 
     ctx.beginPath();
@@ -54,6 +73,13 @@ function canvasRectangle(x, y, width, height, lineWidth, color) {
     ctx.rect(x, y, width, height);
     ctx.stroke();
     ctx.closePath()
+};
+
+function canvasCircle({ center, radius }) {
+    ctx.beginPath();
+    ctx.ellipse(center.x, center.y, radius, radius, 0, 0 , 2 * Math.PI);
+    ctx.stroke();
+    ctx.closePath();
 };
 
 function canvasFillRectangle(x, y, width, height, color) {
@@ -141,13 +167,53 @@ const coordinate = callback => event => {
     callback( new Vector (x, y) );
 };
 
+canvasBackground();
+
+/*
 screen.addEventListener('mousemove', coordinate(vector => {
     clearCanvas();
     drawCartesian();
     canvasVector(vector);
-
-    console.log(vector)
 }))
 
+*/
 
-drawCartesian();
+/*
+let vector = new Vector(1, 0);
+let holder = vector;
+let step = 60;
+
+let angle = Angle.fromDegrees(step);
+
+screen.addEventListener('mousemove', coordinate(scalar => {
+    clearCanvas();
+    drawCartesian();
+
+    for (let i = 0; i < 360 / step; i++) {
+        holder = Angle.rotateVector(angle, holder);
+        canvasVector(holder.scale(scalar.length))
+    };
+}))
+
+*/
+
+let radius = 100;
+let current = null;
+let main = new Circle( new Vector(radius, radius), radius);
+
+screen.addEventListener('mousemove', coordinate(vector=> {
+    current = new Circle(vector, radius);
+
+    canvasBackground();
+
+    canvasCircle(current);
+    canvasCircle(main);
+
+    safe(() => {
+        Circle.intersectingCircles(current, main).forEach(canvasPoint);
+    })
+}));
+
+function safe(statement, onError = () => {}) {
+    try { statement() } catch(e) { onError(e) };
+}; 
