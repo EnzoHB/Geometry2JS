@@ -1,6 +1,10 @@
 {
     "type": "module",
     "dependencies": {
-        "@enzohb/keyboard": "^1.0.0"
+        "@enzohb/keyboard": "^1.0.0",
+        "ts-node": "^10.7.0"
+    },
+    "devDependencies": {
+        "typescript": "^4.6.3"
     }
 }

@@ -21,6 +21,10 @@ class Constant {
     square() {
         return new Constant(this.c**2);
     };
+
+    multiply(x) {
+        return new Constant(x * this.c);
+    };
 }
 
 // f(x) = ax + b;

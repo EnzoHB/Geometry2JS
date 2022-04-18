@@ -14,7 +14,7 @@ class Circle {
     get equation() {
         let x = new Linear(1, -this.center.x).square()
         let y = new Linear(1, -this.center.y).square();
-        let r = new Constant(this.radius).square();
+        let r = new Constant(this.radius).square().multiply(-1);
 
         return { x, y, r };
     };
@@ -46,13 +46,12 @@ class Circle {
         let eq = new Linear(-x.b / y.b, (r.c - x.c - y.c) / y.b);
         
         let yc = new Constant(st.y.c);
-        let rc = new Constant(-st.r.c); // Passed R² to the other side
+        let rc = new Constant(st.r.c);
 
         let fn = sum(st.x, eq.square(), eq.multiply(st.y.b), yc, rc);
-
         let sl = fn.solve().map(x => new Vector(...plugin(x, eq)));
 
-        console.log(fn.solve())
+        return sl;
 
 
         /*

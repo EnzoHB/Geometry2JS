@@ -197,6 +197,8 @@ screen.addEventListener('mousemove', coordinate(scalar => {
 
 */
 
+/*
+
 let radius = 100;
 let current = null;
 let main = new Circle( new Vector(radius, radius), radius);
@@ -217,3 +219,5 @@ screen.addEventListener('mousemove', coordinate(vector=> {
 function safe(statement, onError = () => {}) {
     try { statement() } catch(e) { onError(e) };
 }; 
+
+*/
