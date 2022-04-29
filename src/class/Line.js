@@ -1,5 +1,5 @@
 import { Vector } from "./Vector.js";
-import { Constant, Linear, equals, system, plugin } from '../Math/Algebra.js';
+import { Constant, Linear, equals, system, plugin } from '../src/Math/Algebra.js.js';
 
 class Line {
     constructor(m, b) {

@@ -1,6 +1,6 @@
 import { Line } from "./Line.js";
 import { Vector } from "./Vector.js";
-import { Constant, Linear, Quadratic, minus, sum, plugin } from '../Math/Algebra.js';
+import { Constant, Linear, Quadratic, minus, sum, plugin } from '../src/Math/Algebra.js.js';
 
 class Arc {};
 class Elipse {};

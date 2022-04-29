@@ -1,7 +1,4 @@
-import { on, shift } from '../node_modules/@enzohb/keyboard/index.js';
-import { Vector } from '../class/Vector.js';
-import { Angle } from '../Math/Trignometry.js';
-import { Circle } from '../class/Circle.js';
+import { on, shift } from '@enzohb/keyboard'; 
 
 enableInputs();
 
@@ -36,69 +33,15 @@ ctx.scale(1, -1)
 
 // ------------------------------------------------------- //
 
-function canvasVector(vector, lineWidth, color) {
-
-    ctx.beginPath()
-    ctx.moveTo(0, 0)
-    ctx.lineWidth = lineWidth || 1;
-    ctx.color = color || 'black';
-    ctx.lineTo(vector.x, vector.y);
-    ctx.stroke();
-    ctx.closePath();
-
-};
-
 function canvasBackground() {
     clearCanvas();
     drawCartesian();
     canvasPoint(Vector.origin);
 };
 
-function canvasPoint(vector) {
-    let radius = 3;
-    let color = 'black';
-
-    ctx.beginPath()
-    ctx.fillStyle = color;
-    ctx.ellipse(vector.x, vector.y, radius, radius, 0, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.closePath();
-};
-
-function canvasRectangle(x, y, width, height, lineWidth, color) {
-
-    ctx.beginPath();
-    ctx.lineWidth = lineWidth || 1;
-    ctx.strokeStyle = color || 'black';
-    ctx.rect(x, y, width, height);
-    ctx.stroke();
-    ctx.closePath()
-};
-
-function canvasCircle({ center, radius }) {
-    ctx.beginPath();
-    ctx.ellipse(center.x, center.y, radius, radius, 0, 0 , 2 * Math.PI);
-    ctx.stroke();
-    ctx.closePath();
-};
-
-function canvasFillRectangle(x, y, width, height, color) {
-    ctx.fillStyle = color || 'black';
-    ctx.fillRect(x, y, width, height);
-};
 
 function clearCanvas() {
     canvasFillRectangle(-halfWidth, -halfHeight, screen.width, screen.height, 'white');
-};
-
-function canvasSegment(a, b, color) {
-    ctx.beginPath();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = color || 'black';
-    ctx.moveTo(a.x, a.y);
-    ctx.lineTo(b.x, b.y);
-    ctx.stroke();
-    ctx.closePath();
 };
 
 // ------------------------------------------------ //
